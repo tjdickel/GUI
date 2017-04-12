@@ -3,15 +3,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Iterator;
+
 
 import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+
+
 
 
 public class BallotBuilder extends JFrame implements ActionListener{
@@ -38,7 +37,7 @@ public class BallotBuilder extends JFrame implements ActionListener{
 		JPanel pnlRadios = new JPanel();
 		
 		
-		candidateIn = new JTextField(20);
+		candidateIn = new JTextField();
 		candidateNames = new JTextArea(15,50);
 		candidateNames.setEditable(false);
 		
@@ -55,17 +54,15 @@ public class BallotBuilder extends JFrame implements ActionListener{
 		JRadioButton multiChoice = new JRadioButton("Multi Choice");
 		multiChoice.setActionCommand("Multiple Choice Ballot");
 		
-		JRadioButton writeIn = new JRadioButton("Write-In");
-		writeIn.setActionCommand("Write In Ballot");
 		
 		btnRadio = new ButtonGroup();
         btnRadio.add(singleChoice);
         btnRadio.add(multiChoice);
-        btnRadio.add(writeIn);
 		
 		pnlRadios.add(singleChoice);
         pnlRadios.add(multiChoice);
-        pnlRadios.add(writeIn); 
+        
+        
         
         JButton btnConfirm = new JButton("Confirm");
         btnConfirm.setActionCommand("Confirmation");
@@ -82,10 +79,6 @@ public class BallotBuilder extends JFrame implements ActionListener{
         btnRemove.addActionListener(this);
         
        
-        
-        
-        
-        
 		panelMain.setLayout(layout);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
@@ -114,7 +107,7 @@ public class BallotBuilder extends JFrame implements ActionListener{
 		            .addComponent(candidateNames)
 		);
 		    
-		setSize(850,350);
+		setSize(850, 350);
 		    
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Ballot Builder");
@@ -138,9 +131,6 @@ public class BallotBuilder extends JFrame implements ActionListener{
 		ballotType = 0;
 		
 		
-		
-		
-		
 		if(e.getActionCommand().equals("Confirmation")){
 			
 			if(btnRadio.getSelection() == null){
@@ -152,7 +142,6 @@ public class BallotBuilder extends JFrame implements ActionListener{
 			
 				if(btnRadio.getSelection().getActionCommand() == "Single Choice Ballot") ballotType = 1;
 				else if(btnRadio.getSelection().getActionCommand() == "Multiple Choice Ballot") ballotType = 2;
-				else if(btnRadio.getSelection().getActionCommand() == "Write In Ballot") ballotType = 3;
 				
 				popupTriggered = true;
 				
@@ -173,9 +162,9 @@ public class BallotBuilder extends JFrame implements ActionListener{
 			candidateNum++;
 			
 			StringBuffer strCandidates = new StringBuffer();
-			strCandidates.append(candidateList + candidateIn.getText() + "\n");
+			strCandidates.append(candidateIn.getText() + "\n");
 			
-			candidateList = strCandidates.toString();
+			candidateList = candidateList +  strCandidates.toString();
 			
 			array.add(candidateIn.getText());
 			
@@ -209,7 +198,6 @@ public class BallotBuilder extends JFrame implements ActionListener{
 		}
 		
 		
-		
 		if(popupTriggered){
 			
 			String message = "";
@@ -235,7 +223,9 @@ public class BallotBuilder extends JFrame implements ActionListener{
 	            	try {
 	        			File file = new File("BallotSettings.txt");
 	        			FileWriter fileWriter = new FileWriter(file);
-	        			fileWriter.write(ballotFile);
+	        			fileWriter.write(candidateNum + "\n");
+	        			fileWriter.write(ballotType + "\n");
+	        			for(int i = 0; i < candidateNum; i++){fileWriter.write(array.get(i) + "\n");}
 	        			fileWriter.flush();
 	        			fileWriter.close();
 	        		} catch (IOException ex) {
@@ -252,19 +242,20 @@ public class BallotBuilder extends JFrame implements ActionListener{
 			}
 		}
 		
-		if(!array.isEmpty()){
+		
 			
 			candidateList = "";
 			
 			for(int i = 0; i < array.size(); i++){
 				
-				candidateList = candidateList + array.get(i) + "\n";	
+				candidateList = candidateList + "\n" + array.get(i);	
 			}
 			
-			candidateNames.setText("Current Candidates" + "\n" + candidateList);
-			candidateIn.setText("");
-		}
+			
 		
+		
+		candidateNames.setText("Current Candidates" + "\n" + candidateList);
+		candidateIn.setText("");
 	
 	}
 	
@@ -272,8 +263,5 @@ public class BallotBuilder extends JFrame implements ActionListener{
 		
 		new BallotBuilder();
 	}
-
-
-
 
 }
